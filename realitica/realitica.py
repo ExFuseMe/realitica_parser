@@ -10,7 +10,7 @@ start = datetime.now()
 region = {}
 def parse(url, state, region):
 
-    if url != '' and requests.get(url).status_code == 200:
+    if url != '' and requests.get(f"https://www.realitica.com/{url}").status_code == 200:
         
         children_soup = BeautifulSoup(requests.get(url).text, 'lxml')
         div = children_soup.find(id='listing_body').get_text()
