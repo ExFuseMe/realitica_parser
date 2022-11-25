@@ -1,10 +1,9 @@
 from datetime import *
 from bs4 import BeautifulSoup
-import requests, json, re, threading
-
+import requests, json, re, threading, os
+from PIL import Image
 page = 0
-start = datetime.now()
-
+image_elements = []
 
 
 region = {}
@@ -21,11 +20,21 @@ def parse(url, state, region):
 
         region[state].update({name:text})
 
+
+        page_images = children_soup.find_all('img', attrs={'style':"margin-bottom:15px;"})
+
+        for el in page_images:
+            image_elements.append(el)
+
+
+# call all states from website
+states = ['Macedonia','Hrvatska', 'Crna+Gora', 'Bosna+i+Hercegovina', 'Deutschland', 'Srbija']
+
+
 def main_function(i):
     global region
 
-    # call all states from website
-    states = ['Macedonia','Hrvatska', 'Crna+Gora', 'Bosna+i+Hercegovina', 'Deutschland', 'Srbija']
+
 
     # run all states from array
     for state in states:
@@ -79,7 +88,7 @@ def main_function(i):
                     threading.Thread(target=parse, args=(urls[17],state, region,)).start()
                     threading.Thread(target=parse, args=(urls[18],state, region,)).start()
                     threading.Thread(target=parse, args=(urls[19],state, region,)).start()
-                            
+    
                 else:
                     break
 
@@ -89,6 +98,22 @@ a.start()
 b.start()
 a.join()
 b.join()
-with open('realitica.json', 'w', encoding='utf8') as f:
+abs_path = os.path.dirname(__file__)
+realitica_path = "realitica"
+with open(f"{abs_path}\\{realitica_path}\\realitica.json", 'w', encoding='utf8') as f:
     json.dump(region, f, indent=4, ensure_ascii=False)
-print(datetime.now()-start)
+
+for el in image_elements:
+    # for development
+    folder = el.get('alt').split('.')[0]
+    xpath = f"{abs_path}\\{realitica_path}\\{folder}\\{el.get('alt').split('.')[0]}"
+    # with open(el.get('alt'), 'wb') as f:
+    #     f.write(requests.get(el.get('src')).content)
+    # image = Image.open(el.get('alt')).convert('RGB')
+    # image.save(f"{os.getcwd()}/realitica/images/{el.get('alt').split('.')[0]}.webp")
+    # os.remove(el.get('alt'))
+
+
+    # for checking downloading(locally)
+    print(el.get('alt').split('.')[0], requests.get(f"https://www.realitica.com/{el.get('src')}"))
+
