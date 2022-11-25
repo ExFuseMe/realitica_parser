@@ -88,6 +88,7 @@ def main_function(i):
                     threading.Thread(target=parse, args=(urls[17],state, region,)).start()
                     threading.Thread(target=parse, args=(urls[18],state, region,)).start()
                     threading.Thread(target=parse, args=(urls[19],state, region,)).start()
+                           
                             
                 else:
                     break
